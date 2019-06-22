@@ -1,7 +1,12 @@
 package com.topnews.di;
 
+import android.app.Application;
+
 import com.topnews.service.repository.persistence.ArticleDao;
 import com.topnews.service.repository.persistence.ArticlesDatabase;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -9,14 +14,14 @@ import dagger.Provides;
 @Module
 public class DBModule {
 
-    private ArticlesDatabase articlesDatabase;
-
-    public DBModule(ArticlesDatabase articlesDatabase) {
-        this.articlesDatabase = articlesDatabase;
+    @Singleton
+    @Provides
+    static ArticlesDatabase providesArticlesDatabase(Application application){
+        return ArticlesDatabase.getInstance(application);
     }
 
     @Provides
-    ArticleDao providesArticleDao() {
+    ArticleDao providesArticleDao(ArticlesDatabase articlesDatabase) {
         return articlesDatabase.articleDao();
     }
 

@@ -1,5 +1,10 @@
 package com.topnews.service.model;
 
+import android.util.Log;
+
+import com.topnews.service.utils.DateUtil;
+
+import java.text.ParseException;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
@@ -107,5 +112,17 @@ public class Article {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getNewsDateString() {
+
+        try {
+            return DateUtil.convertDateFormat(getPublishedAt());
+        } catch (ParseException e) {
+            Log.e("Date Conversation", "", e);
+        }
+
+        return getPublishedAt();
+
     }
 }

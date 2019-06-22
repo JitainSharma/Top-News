@@ -1,6 +1,8 @@
 package com.topnews.di;
 
 import com.topnews.service.repository.NewsRepository;
+import com.topnews.service.repository.NewsService;
+import com.topnews.service.repository.persistence.ArticleDao;
 
 import dagger.Module;
 import dagger.Provides;
@@ -9,8 +11,8 @@ import dagger.Provides;
 public class RepositoryModule {
 
     @Provides
-    NewsRepository providesNewsRepository() {
-        return new NewsRepository();
+    NewsRepository providesNewsRepository(ArticleDao mArticleDao, NewsService mNewsService) {
+        return new NewsRepository(mArticleDao, mNewsService);
     }
 
 }

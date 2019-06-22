@@ -20,7 +20,7 @@ public abstract class ArticlesDatabase extends RoomDatabase {
             synchronized (ArticlesDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            ArticlesDatabase.class, "Top-News.db")
+                            ArticlesDatabase.class, "Top_News.db")
                             .build();
                 }
             }

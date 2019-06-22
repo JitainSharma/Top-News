@@ -1,5 +1,7 @@
 package com.topnews.service.repository;
 
+import android.util.Log;
+
 import com.topnews.BuildConfig;
 import com.topnews.service.model.Article;
 import com.topnews.service.repository.persistence.ArticleDao;
@@ -9,37 +11,64 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
-
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class NewsRepository {
 
-    @Inject
-    ArticleDao mArticleDao;
-    @Inject
-    NewsService mNewsService;
+    private final ArticleDao mArticleDao;
+    private final NewsService mNewsService;
 
-    public NewsRepository() {
+    @Inject
+    public NewsRepository(ArticleDao mArticleDao, NewsService mNewsService) {
+
+        this.mArticleDao = mArticleDao;
+        this.mNewsService = mNewsService;
+
     }
 
     public Observable<List<Article>> getTopNews() {
 
-        return Observable.concatArrayEager(
-                mArticleDao.getArticles().toObservable(),
-
+        return Observable.mergeDelayError(
+                mArticleDao.getArticles()
+                        .subscribeOn(Schedulers.computation()),
                 mNewsService.countryTopHeadlines("in", BuildConfig.API_KEY)
+                        .doOnNext(newsResponse -> {
+
+                            //Save data in Disk cache
+                            if (newsResponse.status.equalsIgnoreCase("ok")
+                                    && !newsResponse.articles.isEmpty()) {
+                                mArticleDao.deleteArticles();
+                                mArticleDao.insertArticles(newsResponse.articles)
+                                        .subscribe(
+                                                new DisposableCompletableObserver() {
+                                                    @Override
+                                                    public void onStart() {
+                                                        System.out.println("Started");
+                                                    }
+
+                                                    @Override
+                                                    public void onError(Throwable error) {
+                                                        error.printStackTrace();
+                                                    }
+
+                                                    @Override
+                                                    public void onComplete() {
+                                                        System.out.println("Done!");
+                                                    }
+                                                });
+                            }
+
+                        })
                         .map(newsResponse -> {
 
                             if (newsResponse.status.equalsIgnoreCase("ok"))
                                 return newsResponse.articles;
 
                             throw new Exception(newsResponse.message);
-                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .debounce(400, MILLISECONDS));
+                        }).subscribeOn(Schedulers.io())
+        );
+
     }
 
 }

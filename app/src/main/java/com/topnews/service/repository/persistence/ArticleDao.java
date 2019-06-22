@@ -9,12 +9,13 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 
 @Dao
 public interface ArticleDao {
 
     @Query("SELECT * FROM Articles LIMIT 20")
-    Flowable<List<Article>> getArticles();
+    Observable<List<Article>> getArticles();
 
     @Insert
     Completable insertArticles(List<Article> articles);

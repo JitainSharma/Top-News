@@ -1,38 +1,14 @@
 package com.topnews;
 
-import android.app.Application;
+import com.topnews.di.DaggerAppComponent;
 
-import com.topnews.di.ContextModule;
-import com.topnews.di.DBModule;
-import com.topnews.di.DaggerMyComponent;
-import com.topnews.di.MyComponent;
-import com.topnews.di.NetModule;
-import com.topnews.di.RepositoryModule;
-import com.topnews.service.repository.persistence.ArticlesDatabase;
+import dagger.android.AndroidInjector;
+import dagger.android.DaggerApplication;
 
-public class MyApp extends Application {
-
-    private static MyComponent component;
+public class MyApp extends DaggerApplication {
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-
-        component = DaggerMyComponent.builder()
-                .contextModule(new ContextModule(getApplicationContext()))
-                .dBModule(new DBModule(getDatabase()))
-                .netModule(new NetModule())
-                .repositoryModule(new RepositoryModule())
-                .build();
-
+    protected AndroidInjector<? extends DaggerApplication> applicationInjector() {
+        return DaggerAppComponent.builder().application(this).build();
     }
-
-    public static MyComponent getMyComponent() {
-        return component;
-    }
-
-    public ArticlesDatabase getDatabase() {
-        return ArticlesDatabase.getInstance(this);
-    }
-
 }
