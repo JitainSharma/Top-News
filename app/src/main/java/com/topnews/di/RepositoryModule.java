@@ -11,7 +11,7 @@ import dagger.Provides;
 public class RepositoryModule {
 
     @Provides
-    NewsRepository providesNewsRepository(ArticleDao mArticleDao, NewsService mNewsService) {
+    public NewsRepository providesNewsRepository(ArticleDao mArticleDao, NewsService mNewsService) {
         return new NewsRepository(mArticleDao, mNewsService);
     }
 

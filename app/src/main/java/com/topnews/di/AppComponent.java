@@ -34,5 +34,4 @@ public interface AppComponent extends AndroidInjector<MyApp> {
         AppComponent build();
     }
 
-
 }
