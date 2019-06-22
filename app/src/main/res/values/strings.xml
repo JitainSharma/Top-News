@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Top News</string>
+
+    <string name="iv_article_cd">News article image</string>
 </resources>

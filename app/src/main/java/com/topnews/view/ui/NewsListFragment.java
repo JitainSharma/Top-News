@@ -22,11 +22,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import dagger.android.support.DaggerFragment;
 
-public class NewsListFragment extends DaggerFragment {
+public class NewsListFragment extends DaggerFragment implements NewsListAdapter.OnItemClickListener {
 
     @Inject
     ViewModelProviderFactory providerFactory;
@@ -44,6 +47,16 @@ public class NewsListFragment extends DaggerFragment {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_newslist, container, false);
         binding.setLifecycleOwner(this);
 
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        ((MainActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ((MainActivity) getActivity()).getSupportActionBar().setTitle(getString(R.string.app_name));
+
         NewsListViewModel viewModel = ViewModelProviders.of(this, providerFactory).get(NewsListViewModel.class);
         binding.setViewModel(viewModel);
 
@@ -53,7 +66,7 @@ public class NewsListFragment extends DaggerFragment {
         horizontalDecoration.setDrawable(horizontalDivider);
         binding.rvArticles.addItemDecoration(horizontalDecoration);
 
-        newsListAdapter = new NewsListAdapter(articleList);
+        newsListAdapter = new NewsListAdapter(articleList, this);
         binding.rvArticles.setAdapter(newsListAdapter);
 
         binding.getViewModel().getDataLive().observe(this, articles -> {
@@ -68,7 +81,26 @@ public class NewsListFragment extends DaggerFragment {
         });
 
         binding.getViewModel().fetchTopNews();
-        return binding.getRoot();
     }
 
+    private void setFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void onItemClick(Article item) {
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("Article", item);
+
+        NewsDetailFragment fragment = new NewsDetailFragment();
+        fragment.setArguments(bundle);
+
+        setFragment(fragment);
+
+    }
 }

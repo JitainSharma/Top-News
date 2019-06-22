@@ -44,7 +44,6 @@ public class NewsRepository {
                                                 new DisposableCompletableObserver() {
                                                     @Override
                                                     public void onStart() {
-                                                        System.out.println("Started");
                                                     }
 
                                                     @Override
@@ -54,7 +53,6 @@ public class NewsRepository {
 
                                                     @Override
                                                     public void onComplete() {
-                                                        System.out.println("Done!");
                                                     }
                                                 });
                             }

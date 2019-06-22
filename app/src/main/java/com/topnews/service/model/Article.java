@@ -1,8 +1,11 @@
 package com.topnews.service.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.topnews.service.utils.DateUtil;
+import com.topnews.service.utils.ParcelableUtils;
 
 import java.text.ParseException;
 import java.util.UUID;
@@ -14,7 +17,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "Articles")
-public class Article {
+public class Article implements Parcelable {
 
     @NonNull
     @PrimaryKey
@@ -44,6 +47,44 @@ public class Article {
 
     @ColumnInfo(name = "content")
     private String content;
+
+    public Article(){}
+
+    protected Article(Parcel in) {
+
+        mId = in.readString();
+
+        String id = ParcelableUtils.readString(in);
+        String name = ParcelableUtils.readString(in);
+
+        source = new NewsSource();
+        source.id = id;
+        source.name = name;
+
+        author = ParcelableUtils.readString(in);
+
+        title = in.readString();
+
+        description = ParcelableUtils.readString(in);
+        url = ParcelableUtils.readString(in);
+        urlToImage = ParcelableUtils.readString(in);
+
+        publishedAt = in.readString();
+
+        content = ParcelableUtils.readString(in);
+    }
+
+    public static final Creator<Article> CREATOR = new Creator<Article>() {
+        @Override
+        public Article createFromParcel(Parcel in) {
+            return new Article(in);
+        }
+
+        @Override
+        public Article[] newArray(int size) {
+            return new Article[size];
+        }
+    };
 
     @NonNull
     public String getmId() {
@@ -124,5 +165,31 @@ public class Article {
 
         return getPublishedAt();
 
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeString(mId);
+
+        ParcelableUtils.write(dest, source.id);
+        ParcelableUtils.write(dest, source.name);
+
+        ParcelableUtils.write(dest, author);
+
+        dest.writeString(title);
+
+        ParcelableUtils.write(dest, description);
+        ParcelableUtils.write(dest, url);
+        ParcelableUtils.write(dest, urlToImage);
+
+        dest.writeString(publishedAt);
+
+        ParcelableUtils.write(dest, content);
     }
 }

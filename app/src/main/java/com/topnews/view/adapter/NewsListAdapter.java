@@ -16,9 +16,11 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private List<Article> articles;
     private LayoutInflater layoutInflater;
+    private OnItemClickListener clickListener;
 
-    public NewsListAdapter(List<Article> articles) {
+    public NewsListAdapter(List<Article> articles, OnItemClickListener onItemClickListener) {
         this.articles = articles;
+        this.clickListener = onItemClickListener;
     }
 
     @NonNull
@@ -58,8 +60,14 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         void bind(final Article item) {
 
             binding.setVariable(BR.article, item);
+            binding.clMainItem.setOnClickListener(v -> clickListener.onItemClick(item));
+
         }
 
     }
 
+    //Helper methods
+    public interface OnItemClickListener {
+        void onItemClick(Article item);
+    }
 }

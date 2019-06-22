@@ -1,6 +1,7 @@
 package com.topnews.view.ui;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.topnews.R;
 import com.topnews.databinding.ActivityMainBinding;
@@ -32,5 +33,16 @@ public class MainActivity extends DaggerAppCompatActivity {
                 fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, fragment);
         fragmentTransaction.commit();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
